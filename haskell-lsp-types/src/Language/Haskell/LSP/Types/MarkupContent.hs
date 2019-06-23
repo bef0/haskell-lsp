@@ -1,7 +1,6 @@
-{-# LANGUAGE CPP                        #-}
-{-# LANGUAGE DuplicateRecordFields      #-}
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE DeriveAnyClass             #-}
 
 -- | A MarkupContent literal represents a string value which content can
 -- be represented in different formats.
@@ -11,8 +10,6 @@
 module Language.Haskell.LSP.Types.MarkupContent where
 
 import           Data.Aeson
-import           Data.Aeson.TH
-import           Data.Monoid                                    ((<>))
 import           Data.Text                                      (Text)
 import           Language.Haskell.LSP.Types.Constants
 
@@ -116,12 +113,12 @@ export interface MarkupContent {
 -- | remove HTML from the markdown to avoid script execution.
 data MarkupContent =
   MarkupContent
-    { _kind  :: MarkupKind -- ^ The type of the Markup
-    , _value :: Text -- ^ The content itself
+    { _markupContentKind  :: MarkupKind -- ^ The type of the Markup
+    , _markupContentValue :: Text -- ^ The content itself
     }
   deriving (Read, Show, Eq)
 
-deriveJSON lspOptions ''MarkupContent
+deriveLspJSON lspOptions ''MarkupContent
 
 -- ---------------------------------------------------------------------
 
@@ -144,10 +141,8 @@ sectionSeparator = "*\t*\t*\n"
 
 -- ---------------------------------------------------------------------
 
-#if __GLASGOW_HASKELL__ >= 804
 instance Semigroup MarkupContent where
   (<>) = mappend
-#endif
 
 instance Monoid MarkupContent where
   mempty = MarkupContent MkPlainText ""

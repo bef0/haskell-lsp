@@ -1,7 +1,5 @@
-{-# LANGUAGE CPP                        #-}
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE DeriveTraversable          #-}
-{-# LANGUAGE DuplicateRecordFields      #-}
 {-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE FunctionalDependencies     #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -13,7 +11,6 @@ module Language.Haskell.LSP.Types.DataTypesJSON where
 
 import           Control.Applicative
 import qualified Data.Aeson                                 as A
-import           Data.Aeson.TH
 import           Data.Aeson.Types
 import           Data.Text                                  (Text)
 import qualified Data.Text                                  as T
@@ -109,12 +106,12 @@ instance A.FromJSON Trace where
 
 data InitializeParams =
   InitializeParams {
-    _processId             :: Maybe Int
-  , _rootPath              :: Maybe Text -- ^ Deprecated in favour of _rootUri
-  , _rootUri               :: Maybe Uri
-  , _initializationOptions :: Maybe A.Value
-  , _capabilities          :: ClientCapabilities
-  , _trace                 :: Maybe Trace
+    _initializeParamsProcessId             :: Maybe Int
+  , _initializeParamsRootPath              :: Maybe Text -- ^ Deprecated in favour of _rootUri
+  , _initializeParamsRootUri               :: Maybe Uri
+  , _initializeParamsInitializationOptions :: Maybe A.Value
+  , _initializeParamsCapabilities          :: ClientCapabilities
+  , _initializeParamsTrace                 :: Maybe Trace
   -- |  The workspace folders configured in the client when the server starts.
   -- This property is only available if the client supports workspace folders.
   -- It can be `null` if the client supports workspace folders but none are
@@ -122,12 +119,12 @@ data InitializeParams =
   -- Since LSP 3.6
   --
   -- @since 0.7.0.0
-  , _workspaceFolders      :: Maybe (List WorkspaceFolder)
+  , _initializeParamsWorkspaceFolders      :: Maybe (List WorkspaceFolder)
   } deriving (Show, Read, Eq)
 
-{-# DEPRECATED _rootPath "Use _rootUri" #-}
+{-# DEPRECATED _initializeParamsRootPath "Use _initializeParamsRootUri" #-}
 
-deriveJSON lspOptions ''InitializeParams
+deriveLspJSON lspOptions ''InitializeParams
 
 -- ---------------------------------------------------------------------
 -- Initialize Response
@@ -147,10 +144,10 @@ interface InitializeError {
 -}
 data InitializeError =
   InitializeError
-    { _retry :: Bool
+    { _initializeErrorRetry :: Bool
     } deriving (Read, Show, Eq)
 
-deriveJSON lspOptions ''InitializeError
+deriveLspJSON lspOptions ''InitializeError
 
 -- ---------------------------------------------------------------------
 {-
@@ -214,11 +211,11 @@ interface CompletionOptions {
 
 data CompletionOptions =
   CompletionOptions
-    { _resolveProvider   :: Maybe Bool
-    , _triggerCharacters :: Maybe [String]
+    { _completionOptionsResolveProvider   :: Maybe Bool
+    , _completionOptionsTriggerCharacters :: Maybe [String]
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions {omitNothingFields = True } ''CompletionOptions
+deriveLspJSON lspOptions {omitNothingFields = True } ''CompletionOptions
 
 -- ---------------------------------------------------------------------
 {-
@@ -234,10 +231,10 @@ interface SignatureHelpOptions {
 
 data SignatureHelpOptions =
   SignatureHelpOptions
-    { _triggerCharacters :: Maybe [String]
+    { _signatureHelpOptionsTriggerCharacters :: Maybe [String]
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''SignatureHelpOptions
+deriveLspJSON lspOptions ''SignatureHelpOptions
 
 -- ---------------------------------------------------------------------
 {-
@@ -254,10 +251,10 @@ interface CodeLensOptions {
 
 data CodeLensOptions =
   CodeLensOptions
-    { _resolveProvider :: Maybe Bool
+    { _codeLensOptionsResolveProvider :: Maybe Bool
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''CodeLensOptions
+deriveLspJSON lspOptions ''CodeLensOptions
 
 -- ---------------------------------------------------------------------
 {-
@@ -277,11 +274,11 @@ interface DocumentOnTypeFormattingOptions {
 -}
 data DocumentOnTypeFormattingOptions =
   DocumentOnTypeFormattingOptions
-    { _firstTriggerCharacter :: Text
-    , _moreTriggerCharacter  :: Maybe [String]
+    { _documentOnTypeFormattingOptionsFirstTriggerCharacter :: Text
+    , _documentOnTypeFormattingOptionsMoreTriggerCharacter  :: Maybe [String]
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''DocumentOnTypeFormattingOptions
+deriveLspJSON lspOptions ''DocumentOnTypeFormattingOptions
 
 -- ---------------------------------------------------------------------
 {-
@@ -302,10 +299,10 @@ export interface DocumentLinkOptions {
 data DocumentLinkOptions =
   DocumentLinkOptions
     { -- |Document links have a resolve provider as well.
-      _resolveProvider :: Maybe Bool
+      _documentLinkOptionsResolveProvider :: Maybe Bool
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''DocumentLinkOptions
+deriveLspJSON lspOptions ''DocumentLinkOptions
 
 -- ---------------------------------------------------------------------
 
@@ -327,10 +324,10 @@ export interface ExecuteCommandOptions {
 data ExecuteCommandOptions =
   ExecuteCommandOptions
     { -- | The commands to be executed on the server
-      _commands :: List Text
+      _executeCommandOptionsCommands :: List Text
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''ExecuteCommandOptions
+deriveLspJSON lspOptions ''ExecuteCommandOptions
 
 -- ---------------------------------------------------------------------
 {-
@@ -349,10 +346,10 @@ export interface SaveOptions {
 data SaveOptions =
   SaveOptions
     { -- |The client is supposed to include the content on save.
-      _includeText :: Maybe Bool
+      _saveOptionsIncludeText :: Maybe Bool
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''SaveOptions
+deriveLspJSON lspOptions ''SaveOptions
 
 -- ---------------------------------------------------------------------
 {-
@@ -387,24 +384,24 @@ export interface TextDocumentSyncOptions {
 data TextDocumentSyncOptions =
   TextDocumentSyncOptions
     { -- | Open and close notifications are sent to the server.
-      _openClose         :: Maybe Bool
+      _textDocumentSyncOptionsOpenClose         :: Maybe Bool
 
       -- | Change notificatins are sent to the server. See
       -- TextDocumentSyncKind.None, TextDocumentSyncKind.Full and
       -- TextDocumentSyncKindIncremental.
-    , _change            :: Maybe TextDocumentSyncKind
+    , _textDocumentSyncOptionsChange            :: Maybe TextDocumentSyncKind
 
       -- | Will save notifications are sent to the server.
-    , _willSave          :: Maybe Bool
+    , _textDocumentSyncOptionsWillSave          :: Maybe Bool
 
       -- | Will save wait until requests are sent to the server.
-    , _willSaveWaitUntil :: Maybe Bool
+    , _textDocumentSyncOptionsWillSaveWaitUntil :: Maybe Bool
 
       -- |Save notifications are sent to the server.
-    , _save              :: Maybe SaveOptions
+    , _textDocumentSyncOptionsSave              :: Maybe SaveOptions
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''TextDocumentSyncOptions
+deriveLspJSON lspOptions ''TextDocumentSyncOptions
 
 -- ---------------------------------------------------------------------
 {-
@@ -555,14 +552,14 @@ data GotoOptions = GotoOptionsStatic Bool
                  | GotoOptionsDynamic
                     { -- | A document selector to identify the scope of the registration. If set to null
                       -- the document selector provided on the client side will be used.
-                      _documentSelector :: Maybe DocumentSelector
+                      _gotoOptionsDocumentSelector :: Maybe DocumentSelector
                       -- | The id used to register the request. The id can be used to deregister
                       -- the request again. See also Registration#id.
-                    , _id :: Maybe Text
+                    , _gotoOptionsId :: Maybe Text
                     }
   deriving (Show, Read, Eq)
 
-deriveJSON lspOptions { sumEncoding = A.UntaggedValue } ''GotoOptions
+deriveLspJSON lspOptions { sumEncoding = A.UntaggedValue } ''GotoOptions
 -- TODO: Figure out how to make Lens', not Traversal', for sum types
 --makeFieldsNoPrefix ''GotoOptions
 
@@ -571,14 +568,14 @@ data ColorOptions = ColorOptionsStatic Bool
                   | ColorOptionsDynamicDocument
                     { -- | A document selector to identify the scope of the registration. If set to null
                       -- the document selector provided on the client side will be used.
-                      _documentSelector :: Maybe DocumentSelector
+                      _colorOptionsDocumentSelector :: Maybe DocumentSelector
                       -- | The id used to register the request. The id can be used to deregister
                       -- the request again. See also Registration#id.
-                    , _id :: Maybe Text
+                    , _colorOptionsId :: Maybe Text
                     }
   deriving (Show, Read, Eq)
 
-deriveJSON lspOptions { sumEncoding = A.UntaggedValue } ''ColorOptions
+deriveLspJSON lspOptions { sumEncoding = A.UntaggedValue } ''ColorOptions
 -- makeFieldsNoPrefix ''ColorOptions
 
 data FoldingRangeOptions = FoldingRangeOptionsStatic Bool
@@ -586,48 +583,48 @@ data FoldingRangeOptions = FoldingRangeOptionsStatic Bool
                          | FoldingRangeOptionsDynamicDocument
                            { -- | A document selector to identify the scope of the registration. If set to null
                              -- the document selector provided on the client side will be used.
-                             _documentSelector :: Maybe DocumentSelector
+                             _foldingRangeOptionsDocumentSelector :: Maybe DocumentSelector
                              -- | The id used to register the request. The id can be used to deregister
                              -- the request again. See also Registration#id.
-                           , _id :: Maybe Text
+                           , _foldingRangeOptionsId :: Maybe Text
                            }
   deriving (Show, Read, Eq)
 
-deriveJSON lspOptions { sumEncoding = A.UntaggedValue } ''FoldingRangeOptions
+deriveLspJSON lspOptions { sumEncoding = A.UntaggedValue } ''FoldingRangeOptions
 -- makeFieldsNoPrefix ''FoldingRangeOptions
 
 data WorkspaceFolderChangeNotifications = WorkspaceFolderChangeNotificationsString Text
                                         | WorkspaceFolderChangeNotificationsBool Bool
   deriving (Show, Read, Eq)
 
-deriveJSON lspOptions{ sumEncoding = A.UntaggedValue } ''WorkspaceFolderChangeNotifications
+deriveLspJSON lspOptions{ sumEncoding = A.UntaggedValue } ''WorkspaceFolderChangeNotifications
 
 data WorkspaceFolderOptions =
   WorkspaceFolderOptions
     { -- | The server has support for workspace folders
-      _supported :: Maybe Bool
+      _workspaceFolderOptionsSupported :: Maybe Bool
       -- | Whether the server wants to receive workspace folder
       -- change notifications.
       -- If a strings is provided the string is treated as a ID
       -- under which the notification is registered on the client
       -- side. The ID can be used to unregister for these events
       -- using the `client/unregisterCapability` request.
-    , _changeNotifications :: Maybe WorkspaceFolderChangeNotifications
+    , _workspaceFolderOptionsChangeNotifications :: Maybe WorkspaceFolderChangeNotifications
     }
   deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''WorkspaceFolderOptions
+deriveLspJSON lspOptions ''WorkspaceFolderOptions
 
 data WorkspaceOptions =
   WorkspaceOptions
     { -- |The server supports workspace folder. Since LSP 3.6
       --
       -- @since 0.7.0.0
-      _workspaceFolders :: Maybe WorkspaceFolderOptions
+      _workspaceOptionsWorkspaceFolders :: Maybe WorkspaceFolderOptions
     }
   deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''WorkspaceOptions
+deriveLspJSON lspOptions ''WorkspaceOptions
 
 data InitializeResponseCapabilitiesInner =
   InitializeResponseCapabilitiesInner
@@ -635,63 +632,63 @@ data InitializeResponseCapabilitiesInner =
       -- defining each notification or for backwards compatibility the
       -- 'TextDocumentSyncKind' number.
       -- If omitted it defaults to 'TdSyncNone'.
-      _textDocumentSync                 :: Maybe TDS
+      _initializeResponseCapabilitiesInnerTextDocumentSync                 :: Maybe TDS
       -- | The server provides hover support.
-    , _hoverProvider                    :: Maybe Bool
+    , _initializeResponseCapabilitiesInnerHoverProvider                    :: Maybe Bool
       -- | The server provides completion support.
-    , _completionProvider               :: Maybe CompletionOptions
+    , _initializeResponseCapabilitiesInnerCompletionProvider               :: Maybe CompletionOptions
       -- | The server provides signature help support.
-    , _signatureHelpProvider            :: Maybe SignatureHelpOptions
+    , _initializeResponseCapabilitiesInnerSignatureHelpProvider            :: Maybe SignatureHelpOptions
       -- | The server provides goto definition support.
-    , _definitionProvider               :: Maybe Bool
+    , _initializeResponseCapabilitiesInnerDefinitionProvider               :: Maybe Bool
       -- | The server provides Goto Type Definition support. Since LSP 3.6
       --
       -- @since 0.7.0.0
-    , _typeDefinitionProvider           :: Maybe GotoOptions
+    , _initializeResponseCapabilitiesInnerTypeDefinitionProvider           :: Maybe GotoOptions
       -- | The server provides Goto Implementation support.
       -- Since LSP 3.6
       --
       -- @since 0.7.0.0
-    , _implementationProvider           :: Maybe GotoOptions
+    , _initializeResponseCapabilitiesInnerImplementationProvider           :: Maybe GotoOptions
       -- | The server provides find references support.
-    , _referencesProvider               :: Maybe Bool
+    , _initializeResponseCapabilitiesInnerReferencesProvider               :: Maybe Bool
       -- | The server provides document highlight support.
-    , _documentHighlightProvider        :: Maybe Bool
+    , _initializeResponseCapabilitiesInnerDocumentHighlightProvider        :: Maybe Bool
       -- | The server provides document symbol support.
-    , _documentSymbolProvider           :: Maybe Bool
+    , _initializeResponseCapabilitiesInnerDocumentSymbolProvider           :: Maybe Bool
       -- | The server provides workspace symbol support.
-    , _workspaceSymbolProvider          :: Maybe Bool
+    , _initializeResponseCapabilitiesInnerWorkspaceSymbolProvider          :: Maybe Bool
       -- | The server provides code actions.
-    , _codeActionProvider               :: Maybe Bool
+    , _initializeResponseCapabilitiesInnerCodeActionProvider               :: Maybe Bool
       -- | The server provides code lens.
-    , _codeLensProvider                 :: Maybe CodeLensOptions
+    , _initializeResponseCapabilitiesInnerCodeLensProvider                 :: Maybe CodeLensOptions
       -- | The server provides document formatting.
-    , _documentFormattingProvider       :: Maybe Bool
+    , _initializeResponseCapabilitiesInnerDocumentFormattingProvider       :: Maybe Bool
       -- | The server provides document range formatting.
-    , _documentRangeFormattingProvider  :: Maybe Bool
+    , _initializeResponseCapabilitiesInnerDocumentRangeFormattingProvider  :: Maybe Bool
       -- | The server provides document formatting on typing.
-    , _documentOnTypeFormattingProvider :: Maybe DocumentOnTypeFormattingOptions
+    , _initializeResponseCapabilitiesInnerDocumentOnTypeFormattingProvider :: Maybe DocumentOnTypeFormattingOptions
       -- | The server provides rename support.
-    , _renameProvider                   :: Maybe Bool
+    , _initializeResponseCapabilitiesInnerRenameProvider                   :: Maybe Bool
       -- | The server provides document link support.
-    , _documentLinkProvider             :: Maybe DocumentLinkOptions
+    , _initializeResponseCapabilitiesInnerDocumentLinkProvider             :: Maybe DocumentLinkOptions
       -- | The server provides color provider support. Since LSP 3.6
       --
       -- @since 0.7.0.0
-    , _colorProvider                    :: Maybe ColorOptions
+    , _initializeResponseCapabilitiesInnerColorProvider                    :: Maybe ColorOptions
       -- | The server provides folding provider support. Since LSP 3.10
       --
       -- @since 0.7.0.0
-    , _foldingRangeProvider             :: Maybe FoldingRangeOptions
+    , _initializeResponseCapabilitiesInnerFoldingRangeProvider             :: Maybe FoldingRangeOptions
       -- | The server provides execute command support.
-    , _executeCommandProvider           :: Maybe ExecuteCommandOptions
+    , _initializeResponseCapabilitiesInnerExecuteCommandProvider           :: Maybe ExecuteCommandOptions
       -- | Workspace specific server capabilities
-    , _workspace                        :: Maybe WorkspaceOptions
+    , _initializeResponseCapabilitiesInnerWorkspace                        :: Maybe WorkspaceOptions
       -- | Experimental server capabilities.
-    , _experimental                     :: Maybe A.Value
+    , _initializeResponseCapabilitiesInnerExperimental                     :: Maybe A.Value
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''InitializeResponseCapabilitiesInner
+deriveLspJSON lspOptions ''InitializeResponseCapabilitiesInner
 
 -- ---------------------------------------------------------------------
 -- |
@@ -699,10 +696,10 @@ deriveJSON lspOptions ''InitializeResponseCapabilitiesInner
 --
 data InitializeResponseCapabilities =
   InitializeResponseCapabilities {
-    _capabilities :: InitializeResponseCapabilitiesInner
+    _initializeResponseCapabilitiesCapabilities :: InitializeResponseCapabilitiesInner
   } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''InitializeResponseCapabilities
+deriveLspJSON lspOptions ''InitializeResponseCapabilities
 
 -- ---------------------------------------------------------------------
 
@@ -819,7 +816,7 @@ data ExitParams =
     {
     } deriving (Show, Read, Eq)
 
-deriveJSON defaultOptions ''ExitParams
+deriveLspJSON defaultOptions ''ExitParams
 
 type ExitNotification = NotificationMessage ClientMethod (Maybe ExitParams)
 
@@ -898,23 +895,23 @@ data Registration =
   Registration
     { -- |The id used to register the request. The id can be used to deregister
       -- the request again.
-      _id              :: Text
+      _registrationId              :: Text
 
        -- | The method / capability to register for.
-    , _method          :: ClientMethod
+    , _registrationMethod          :: ClientMethod
 
       -- | Options necessary for the registration.
-    , _registerOptions :: Maybe A.Value
+    , _registrationRegisterOptions :: Maybe A.Value
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''Registration
+deriveLspJSON lspOptions ''Registration
 
 data RegistrationParams =
   RegistrationParams
-    { _registrations :: List Registration
+    { _registrationParamsRegistrations :: List Registration
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''RegistrationParams
+deriveLspJSON lspOptions ''RegistrationParams
 
 -- |Note: originates at the server
 type RegisterCapabilityRequest = RequestMessage ServerMethod RegistrationParams ()
@@ -938,10 +935,10 @@ export interface TextDocumentRegistrationOptions {
 
 data TextDocumentRegistrationOptions =
   TextDocumentRegistrationOptions
-    { _documentSelector :: Maybe DocumentSelector
+    { _textDocumentRegistrationOptionsDocumentSelector :: Maybe DocumentSelector
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''TextDocumentRegistrationOptions
+deriveLspJSON lspOptions ''TextDocumentRegistrationOptions
 
 -- ---------------------------------------------------------------------
 {-
@@ -985,20 +982,20 @@ data Unregistration =
   Unregistration
     { -- | The id used to unregister the request or notification. Usually an id
       -- provided during the register request.
-      _id     :: Text
+      _unregistrationId     :: Text
 
        -- |The method / capability to unregister for.
-    , _method :: Text
+    , _unregistrationMethod :: Text
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''Unregistration
+deriveLspJSON lspOptions ''Unregistration
 
 data UnregistrationParams =
   UnregistrationParams
-    { _unregistrations :: List Unregistration
+    { _unregistrationParamsUnregistrations :: List Unregistration
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''UnregistrationParams
+deriveLspJSON lspOptions ''UnregistrationParams
 
 type UnregisterCapabilityRequest = RequestMessage ServerMethod UnregistrationParams ()
 
@@ -1028,10 +1025,10 @@ interface DidChangeConfigurationParams {
 
 data DidChangeConfigurationParams =
   DidChangeConfigurationParams {
-    _settings :: A.Value
+    _didChangeConfigurationParamsSettings :: A.Value
   } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''DidChangeConfigurationParams
+deriveLspJSON lspOptions ''DidChangeConfigurationParams
 
 -- ---------------------------------------------------------------------
 
@@ -1088,18 +1085,18 @@ error: code and message set in case an exception happens during the
 
 data ConfigurationItem =
   ConfigurationItem
-    { _scopeUri :: Maybe Text -- ^ The scope to get the configuration section for.
-    , _section  :: Maybe Text -- ^ The configuration section asked for.
+    { _configurationItemScopeUri :: Maybe Text -- ^ The scope to get the configuration section for.
+    , _configurationItemSection  :: Maybe Text -- ^ The configuration section asked for.
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''ConfigurationItem
+deriveLspJSON lspOptions ''ConfigurationItem
 
 data ConfigurationParams =
   ConfigurationParams
-    { _items :: List ConfigurationItem
+    { _configurationParamsItems :: List ConfigurationItem
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''ConfigurationParams
+deriveLspJSON lspOptions ''ConfigurationParams
 
 type ConfigurationRequest = RequestMessage ServerMethod ConfigurationParams (List A.Value)
 type ConfigurationResponse = ResponseMessage (List A.Value)
@@ -1132,10 +1129,10 @@ Registration Options: TextDocumentRegistrationOptions
 
 data DidOpenTextDocumentParams =
   DidOpenTextDocumentParams {
-    _textDocument :: TextDocumentItem
+    _didOpenTextDocumentParamsTextDocument :: TextDocumentItem
   } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''DidOpenTextDocumentParams
+deriveLspJSON lspOptions ''DidOpenTextDocumentParams
 
 type DidOpenTextDocumentNotification = NotificationMessage ClientMethod DidOpenTextDocumentParams
 
@@ -1191,22 +1188,22 @@ interface TextDocumentContentChangeEvent {
 -}
 data TextDocumentContentChangeEvent =
   TextDocumentContentChangeEvent
-    { _range       :: Maybe Range
-    , _rangeLength :: Maybe Int
-    , _text        :: Text
+    { _textDocumentContentChangeEventRange       :: Maybe Range
+    , _textDocumentContentChangeEventRangeLength :: Maybe Int
+    , _textDocumentContentChangeEventText        :: Text
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions { omitNothingFields = True } ''TextDocumentContentChangeEvent
+deriveLspJSON lspOptions { omitNothingFields = True } ''TextDocumentContentChangeEvent
 
 -- -------------------------------------
 
 data DidChangeTextDocumentParams =
   DidChangeTextDocumentParams
-    { _textDocument   :: VersionedTextDocumentIdentifier
-    , _contentChanges :: List TextDocumentContentChangeEvent
+    { _didChangeTextDocumentParamsTextDocument   :: VersionedTextDocumentIdentifier
+    , _didChangeTextDocumentParamsContentChanges :: List TextDocumentContentChangeEvent
     } deriving (Show,Read,Eq)
 
-deriveJSON lspOptions ''DidChangeTextDocumentParams
+deriveLspJSON lspOptions ''DidChangeTextDocumentParams
 
 type DidChangeTextDocumentNotification = NotificationMessage ClientMethod DidChangeTextDocumentParams
 {-
@@ -1229,11 +1226,11 @@ export interface TextDocumentChangeRegistrationOptions extends TextDocumentRegis
 
 data TextDocumentChangeRegistrationOptions =
   TextDocumentChangeRegistrationOptions
-    { _documentSelector :: Maybe DocumentSelector
-    , _syncKind         :: TextDocumentSyncKind
+    { _textDocumentChangeRegistrationOptionsDocumentSelector :: Maybe DocumentSelector
+    , _textDocumentChangeRegistrationOptionsSyncKind         :: TextDocumentSyncKind
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''TextDocumentChangeRegistrationOptions
+deriveLspJSON lspOptions ''TextDocumentChangeRegistrationOptions
 
 -- ---------------------------------------------------------------------
 {-
@@ -1311,11 +1308,11 @@ instance A.FromJSON TextDocumentSaveReason where
 
 data WillSaveTextDocumentParams =
   WillSaveTextDocumentParams
-    { _textDocument :: TextDocumentIdentifier
-    , _reason       :: TextDocumentSaveReason
+    { _willSaveTextDocumentParamsTextDocument :: TextDocumentIdentifier
+    , _willSaveTextDocumentParamsReason       :: TextDocumentSaveReason
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''WillSaveTextDocumentParams
+deriveLspJSON lspOptions ''WillSaveTextDocumentParams
 
 type WillSaveTextDocumentNotification = NotificationMessage ClientMethod WillSaveTextDocumentParams
 
@@ -1370,10 +1367,10 @@ interface DidSaveTextDocumentParams {
 -}
 data DidSaveTextDocumentParams =
   DidSaveTextDocumentParams
-    { _textDocument :: TextDocumentIdentifier
+    { _didSaveTextDocumentParamsTextDocument :: TextDocumentIdentifier
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''DidSaveTextDocumentParams
+deriveLspJSON lspOptions ''DidSaveTextDocumentParams
 
 type DidSaveTextDocumentNotification = NotificationMessage ClientMethod DidSaveTextDocumentParams
 
@@ -1407,10 +1404,10 @@ interface DidCloseTextDocumentParams {
 -}
 data DidCloseTextDocumentParams =
   DidCloseTextDocumentParams
-    { _textDocument :: TextDocumentIdentifier
+    { _didCloseTextDocumentParamsTextDocument :: TextDocumentIdentifier
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''DidCloseTextDocumentParams
+deriveLspJSON lspOptions ''DidCloseTextDocumentParams
 
 
 type DidCloseTextDocumentNotification = NotificationMessage ClientMethod DidCloseTextDocumentParams
@@ -1490,18 +1487,18 @@ instance A.FromJSON FileChangeType where
 
 data FileEvent =
   FileEvent
-    { _uri   :: Uri
-    , _xtype :: FileChangeType
+    { _fileEventUri   :: Uri
+    , _fileEventType :: FileChangeType
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions{ fieldLabelModifier = customModifier } ''FileEvent
+deriveLspJSON lspOptions ''FileEvent
 
 data DidChangeWatchedFilesParams =
   DidChangeWatchedFilesParams
-    { _changes :: List FileEvent
+    { _didChangeWatchedFilesParamsChanges :: List FileEvent
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''DidChangeWatchedFilesParams
+deriveLspJSON lspOptions ''DidChangeWatchedFilesParams
 
 
 type DidChangeWatchedFilesNotification = NotificationMessage ClientMethod DidChangeWatchedFilesParams
@@ -1535,11 +1532,11 @@ interface PublishDiagnosticsParams {
 
 data PublishDiagnosticsParams =
   PublishDiagnosticsParams
-    { _uri         :: Uri
-    , _diagnostics :: List Diagnostic
+    { _publishDiagnosticsParamsUri         :: Uri
+    , _publishDiagnosticsParamsDiagnostics :: List Diagnostic
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''PublishDiagnosticsParams
+deriveLspJSON lspOptions ''PublishDiagnosticsParams
 
 
 type PublishDiagnosticsNotification = NotificationMessage ServerMethod PublishDiagnosticsParams
@@ -1607,11 +1604,11 @@ Registration Options: TextDocumentRegistrationOptions
 
 data LanguageString =
   LanguageString
-    { _language :: Text
-    , _value    :: Text
+    { _languageStringLanguage :: Text
+    , _languageStringValue    :: Text
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''LanguageString
+deriveLspJSON lspOptions ''LanguageString
 
 {-# DEPRECATED MarkedString, PlainString, CodeString "Use MarkupContent instead, since 3.3.0 (11/24/2017)" #-}
 data MarkedString =
@@ -1645,10 +1642,10 @@ instance FromJSON HoverContents where
 
 -- -------------------------------------
 
-#if __GLASGOW_HASKELL__ >= 804
+-- #if __GLASGOW_HASKELL__ >= 804
 instance Semigroup HoverContents where
   (<>) = mappend
-#endif
+-- #endif
 
 instance Monoid HoverContents where
   mempty = HoverContentsMS (List [])
@@ -1666,11 +1663,11 @@ toMarkupContent (CodeString (LanguageString lang s)) = markedUpContent lang s
 
 data Hover =
   Hover
-    { _contents :: HoverContents
-    , _range    :: Maybe Range
+    { _hoverContents :: HoverContents
+    , _hoverRange    :: Maybe Range
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''Hover
+deriveLspJSON lspOptions ''Hover
 
 
 type HoverRequest = RequestMessage ClientMethod TextDocumentPositionParams (Maybe Hover)
@@ -1769,31 +1766,31 @@ interface ParameterInformation {
 
 data ParameterInformation =
   ParameterInformation
-    { _label         :: Text
-    , _documentation :: Maybe Text
+    { _parameterInformationLabel         :: Text
+    , _parameterInformationDocumentation :: Maybe Text
     } deriving (Read,Show,Eq)
-deriveJSON lspOptions ''ParameterInformation
+deriveLspJSON lspOptions ''ParameterInformation
 
 
 -- -------------------------------------
 
 data SignatureInformation =
   SignatureInformation
-    { _label         :: Text
-    , _documentation :: Maybe Text
-    , _parameters    :: Maybe [ParameterInformation]
+    { _signatureInformationLabel         :: Text
+    , _signatureInformationDocumentation :: Maybe Text
+    , _signatureInformationParameters    :: Maybe [ParameterInformation]
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''SignatureInformation
+deriveLspJSON lspOptions ''SignatureInformation
 
 data SignatureHelp =
   SignatureHelp
-    { _signatures      :: List SignatureInformation
-    , _activeSignature :: Maybe Int -- ^ The active signature
-    , _activeParameter :: Maybe Int -- ^ The active parameter of the active signature
+    { _signatureHelpSignatures      :: List SignatureInformation
+    , _signatureHelpActiveSignature :: Maybe Int -- ^ The active signature
+    , _signatureHelpActiveParameter :: Maybe Int -- ^ The active parameter of the active signature
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''SignatureHelp
+deriveLspJSON lspOptions ''SignatureHelp
 
 type SignatureHelpRequest = RequestMessage ClientMethod TextDocumentPositionParams SignatureHelp
 type SignatureHelpResponse = ResponseMessage SignatureHelp
@@ -1815,11 +1812,11 @@ export interface SignatureHelpRegistrationOptions extends TextDocumentRegistrati
 
 data SignatureHelpRegistrationOptions =
   SignatureHelpRegistrationOptions
-    { _documentSelector  :: Maybe DocumentSelector
-    , _triggerCharacters :: Maybe (List String)
+    { _signatureHelpRegistrationOptionsDocumentSelector  :: Maybe DocumentSelector
+    , _signatureHelpRegistrationOptionsTriggerCharacters :: Maybe (List String)
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''SignatureHelpRegistrationOptions
+deriveLspJSON lspOptions ''SignatureHelpRegistrationOptions
 
 -- ---------------------------------------------------------------------
 {-
@@ -1948,20 +1945,20 @@ Response:
 
 data ReferenceContext =
   ReferenceContext
-    { _includeDeclaration :: Bool
+    { _referenceContextIncludeDeclaration :: Bool
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''ReferenceContext
+deriveLspJSON lspOptions ''ReferenceContext
 
 
 data ReferenceParams =
   ReferenceParams
-    { _textDocument :: TextDocumentIdentifier
-    , _position     :: Position
-    , _context      :: ReferenceContext
+    { _referenceParamsTextDocument :: TextDocumentIdentifier
+    , _referenceParamsPosition     :: Position
+    , _referenceParamsContext      :: ReferenceContext
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''ReferenceParams
+deriveLspJSON lspOptions ''ReferenceParams
 
 
 type ReferencesRequest  = RequestMessage ClientMethod ReferenceParams (List Location)
@@ -2057,11 +2054,11 @@ instance A.FromJSON DocumentHighlightKind where
 
 data DocumentHighlight =
   DocumentHighlight
-    { _range :: Range
-    , _kind  :: Maybe DocumentHighlightKind
+    { _documentHighlightRange :: Range
+    , _documentHighlightKind  :: Maybe DocumentHighlightKind
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''DocumentHighlight
+deriveLspJSON lspOptions ''DocumentHighlight
 
 type DocumentHighlightRequest = RequestMessage ClientMethod TextDocumentPositionParams (List DocumentHighlight)
 type DocumentHighlightsResponse = ResponseMessage (List DocumentHighlight)
@@ -2099,10 +2096,10 @@ Response
 
 data WorkspaceSymbolParams =
   WorkspaceSymbolParams
-    { _query :: Text
+    { _workspaceSymbolParamsQuery :: Text
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''WorkspaceSymbolParams
+deriveLspJSON lspOptions ''WorkspaceSymbolParams
 
 type WorkspaceSymbolRequest  = RequestMessage ClientMethod WorkspaceSymbolParams (List SymbolInformation)
 type WorkspaceSymbolsResponse = ResponseMessage (List SymbolInformation)
@@ -2163,22 +2160,22 @@ interface CodeLens {
 
 data CodeLensParams =
   CodeLensParams
-    { _textDocument :: TextDocumentIdentifier
+    { _codeLensParamsTextDocument :: TextDocumentIdentifier
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''CodeLensParams
+deriveLspJSON lspOptions ''CodeLensParams
 
 
 -- -------------------------------------
 
 data CodeLens =
   CodeLens
-    { _range   :: Range
-    , _command :: Maybe Command
-    , _xdata   :: Maybe A.Value
+    { _codeLensRange   :: Range
+    , _codeLensCommand :: Maybe Command
+    , _codeLensData   :: Maybe A.Value
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions{ fieldLabelModifier = customModifier } ''CodeLens
+deriveLspJSON lspOptions ''CodeLens
 
 
 type CodeLensRequest = RequestMessage ClientMethod CodeLensParams (List CodeLens)
@@ -2198,11 +2195,11 @@ export interface CodeLensRegistrationOptions extends TextDocumentRegistrationOpt
 
 data CodeLensRegistrationOptions =
   CodeLensRegistrationOptions
-    { _documentSelector :: Maybe DocumentSelector
-    , _resolveProvider  :: Maybe Bool
+    { _codeLensRegistrationOptionsDocumentSelector :: Maybe DocumentSelector
+    , _codeLensRegistrationOptionsResolveProvider  :: Maybe Bool
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''CodeLensRegistrationOptions
+deriveLspJSON lspOptions ''CodeLensRegistrationOptions
 
 -- ---------------------------------------------------------------------
 {-
@@ -2285,18 +2282,18 @@ export interface DocumentLinkRegistrationOptions extends TextDocumentRegistratio
 
 data DocumentLinkParams =
   DocumentLinkParams
-    { _textDocument :: TextDocumentIdentifier
+    { _documentLinkParamsTextDocument :: TextDocumentIdentifier
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''DocumentLinkParams
+deriveLspJSON lspOptions ''DocumentLinkParams
 
 data DocumentLink =
   DocumentLink
-    { _range  :: Range
-    , _target :: Maybe Text
+    { _documentLinkRange  :: Range
+    , _documentLinkTarget :: Maybe Text
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''DocumentLink
+deriveLspJSON lspOptions ''DocumentLink
 
 type DocumentLinkRequest = RequestMessage ClientMethod DocumentLinkParams (List DocumentLink)
 type DocumentLinkResponse = ResponseMessage (List DocumentLink)
@@ -2383,20 +2380,20 @@ Registration Options: TextDocumentRegistrationOptions
 
 data FormattingOptions =
   FormattingOptions
-    { _tabSize      :: Int
-    , _insertSpaces :: Bool -- ^ Prefer spaces over tabs
+    { _formattingOptionsTabSize      :: Int
+    , _formattingOptionsInsertSpaces :: Bool -- ^ Prefer spaces over tabs
     -- Note: May be more properties
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''FormattingOptions
+deriveLspJSON lspOptions ''FormattingOptions
 
 data DocumentFormattingParams =
   DocumentFormattingParams
-    { _textDocument :: TextDocumentIdentifier
-    , _options      :: FormattingOptions
+    { _documentFormattingParamsTextDocument :: TextDocumentIdentifier
+    , _documentFormattingParamsOptions      :: FormattingOptions
     } deriving (Show,Read,Eq)
 
-deriveJSON lspOptions ''DocumentFormattingParams
+deriveLspJSON lspOptions ''DocumentFormattingParams
 
 type DocumentFormattingRequest  = RequestMessage ClientMethod DocumentFormattingParams (List TextEdit)
 type DocumentFormattingResponse = ResponseMessage (List TextEdit)
@@ -2442,12 +2439,12 @@ Response
 
 data DocumentRangeFormattingParams =
   DocumentRangeFormattingParams
-    { _textDocument :: TextDocumentIdentifier
-    , _range        :: Range
-    , _options      :: FormattingOptions
+    { _documentRangeFormattingParamsTextDocument :: TextDocumentIdentifier
+    , _documentRangeFormattingParamsRange        :: Range
+    , _documentRangeFormattingParamsOptions      :: FormattingOptions
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''DocumentRangeFormattingParams
+deriveLspJSON lspOptions ''DocumentRangeFormattingParams
 
 type DocumentRangeFormattingRequest  = RequestMessage ClientMethod DocumentRangeFormattingParams (List TextEdit)
 type DocumentRangeFormattingResponse = ResponseMessage (List TextEdit)
@@ -2510,24 +2507,24 @@ export interface DocumentOnTypeFormattingRegistrationOptions extends TextDocumen
 
 data DocumentOnTypeFormattingParams =
   DocumentOnTypeFormattingParams
-    { _textDocument :: TextDocumentIdentifier
-    , _position     :: Position
-    , _ch           :: Text
-    , _options      :: FormattingOptions
+    { _documentOnTypeFormattingParamsTextDocument :: TextDocumentIdentifier
+    , _documentOnTypeFormattingParamsPosition     :: Position
+    , _documentOnTypeFormattingParamsCh           :: Text
+    , _documentOnTypeFormattingParamsOptions      :: FormattingOptions
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''DocumentOnTypeFormattingParams
+deriveLspJSON lspOptions ''DocumentOnTypeFormattingParams
 
 type DocumentOnTypeFormattingRequest  = RequestMessage ClientMethod DocumentOnTypeFormattingParams (List TextEdit)
 type DocumentOnTypeFormattingResponse = ResponseMessage (List TextEdit)
 
 data DocumentOnTypeFormattingRegistrationOptions =
   DocumentOnTypeFormattingRegistrationOptions
-    { _firstTriggerCharacter :: Text
-    , _moreTriggerCharacter  :: Maybe (List String)
+    { _documentOnTypeFormattingRegistrationOptionsFirstTriggerCharacter :: Text
+    , _documentOnTypeFormattingRegistrationOptionsMoreTriggerCharacter  :: Maybe (List String)
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''DocumentOnTypeFormattingRegistrationOptions
+deriveLspJSON lspOptions ''DocumentOnTypeFormattingRegistrationOptions
 
 -- ---------------------------------------------------------------------
 {-
@@ -2573,12 +2570,12 @@ Registration Options: TextDocumentRegistrationOptions
 -}
 data RenameParams =
   RenameParams
-    { _textDocument :: TextDocumentIdentifier
-    , _position     :: Position
-    , _newName      :: Text
+    { _renameParamsTextDocument :: TextDocumentIdentifier
+    , _renameParamsPosition     :: Position
+    , _renameParamsNewName      :: Text
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''RenameParams
+deriveLspJSON lspOptions ''RenameParams
 
 
 -- {\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"textDocument/rename\",\"params\":{\"textDocument\":{\"uri\":\"file:///home/alanz/mysrc/github/alanz/haskell-lsp/src/HieVscode.hs\"},\"position\":{\"line\":37,\"character\":17},\"newName\":\"getArgs'\"}}
@@ -2639,21 +2636,21 @@ export interface ExecuteCommandRegistrationOptions {
 
 data ExecuteCommandParams =
   ExecuteCommandParams
-    { _command   :: Text
-    , _arguments :: Maybe (List A.Value)
+    { _executeCommandParamsCommand   :: Text
+    , _executeCommandParamsArguments :: Maybe (List A.Value)
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''ExecuteCommandParams
+deriveLspJSON lspOptions ''ExecuteCommandParams
 
 type ExecuteCommandRequest = RequestMessage ClientMethod ExecuteCommandParams A.Value
 type ExecuteCommandResponse = ResponseMessage A.Value
 
 data ExecuteCommandRegistrationOptions =
   ExecuteCommandRegistrationOptions
-    { _commands :: List Text
+    { _executeCommandRegistrationOptionsCommands :: List Text
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''ExecuteCommandRegistrationOptions
+deriveLspJSON lspOptions ''ExecuteCommandRegistrationOptions
 
 -- ---------------------------------------------------------------------
 {-
@@ -2693,17 +2690,17 @@ export interface ApplyWorkspaceEditResponse {
 -}
 data ApplyWorkspaceEditParams =
   ApplyWorkspaceEditParams
-    { _edit :: WorkspaceEdit
+    { _applyWorkspaceEditParamsEdit :: WorkspaceEdit
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''ApplyWorkspaceEditParams
+deriveLspJSON lspOptions ''ApplyWorkspaceEditParams
 
 data ApplyWorkspaceEditResponseBody =
   ApplyWorkspaceEditResponseBody
-    { _applied :: Bool
+    { _applyWorkspaceEditResponseBodyApplied :: Bool
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''ApplyWorkspaceEditResponseBody
+deriveLspJSON lspOptions ''ApplyWorkspaceEditResponseBody
 
 -- | Sent from the server to the client
 type ApplyWorkspaceEditRequest  = RequestMessage ServerMethod ApplyWorkspaceEditParams ApplyWorkspaceEditResponseBody
@@ -2715,15 +2712,15 @@ type ApplyWorkspaceEditResponse = ResponseMessage ApplyWorkspaceEditResponseBody
 
 data TraceParams =
   TraceParams {
-    _value :: Text
+    _traceParamsValue :: Text
   } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''TraceParams
+deriveLspJSON lspOptions ''TraceParams
 
 
 data TraceNotification =
   TraceNotification {
-    _params :: TraceParams
+    _traceNotificationParams :: TraceParams
   } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''TraceNotification
+deriveLspJSON lspOptions ''TraceNotification

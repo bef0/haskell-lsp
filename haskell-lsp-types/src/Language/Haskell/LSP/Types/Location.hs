@@ -3,7 +3,6 @@
 module Language.Haskell.LSP.Types.Location where
 
 import           Control.DeepSeq
-import           Data.Aeson.TH
 import           GHC.Generics
 import           Language.Haskell.LSP.Types.Constants
 import           Language.Haskell.LSP.Types.Uri
@@ -40,12 +39,12 @@ interface Position {
 -}
 data Position =
   Position
-    { _line      :: Int
-    , _character :: Int
+    { _positionLine      :: Int
+    , _positionCharacter :: Int
     } deriving (Show, Read, Eq, Ord, Generic)
 
 instance NFData Position
-deriveJSON lspOptions ''Position
+deriveLspJSON lspOptions ''Position
 
 -- ---------------------------------------------------------------------
 {-
@@ -70,12 +69,12 @@ interface Range {
 
 data Range =
   Range
-    { _start :: Position
-    , _end   :: Position
+    { _rangeStart :: Position
+    , _rangeEnd   :: Position
     } deriving (Show, Read, Eq, Ord, Generic)
 
 instance NFData Range
-deriveJSON lspOptions ''Range
+deriveLspJSON lspOptions ''Range
 
 -- ---------------------------------------------------------------------
 {-
@@ -91,9 +90,9 @@ interface Location {
 
 data Location =
   Location
-    { _uri   :: Uri
-    , _range :: Range
+    { _locationUri   :: Uri
+    , _locationRange :: Range
     } deriving (Show, Read, Eq, Ord, Generic)
 
 instance NFData Location
-deriveJSON lspOptions ''Location
+deriveLspJSON lspOptions ''Location

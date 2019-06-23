@@ -1,9 +1,7 @@
-{-# LANGUAGE DuplicateRecordFields      #-}
 {-# LANGUAGE TemplateHaskell            #-}
 module Language.Haskell.LSP.Types.Window where
 
 import qualified Data.Aeson                                 as A
-import           Data.Aeson.TH
 import           Data.Text                                  (Text)
 import           Language.Haskell.LSP.Types.Constants
 import           Language.Haskell.LSP.Types.Message
@@ -79,11 +77,11 @@ instance A.FromJSON MessageType where
 
 data ShowMessageParams =
   ShowMessageParams {
-    _xtype   :: MessageType
-  , _message :: Text
+    _showMessageParamstype   :: MessageType
+  , _showMessageParamsMessage :: Text
   } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions{ fieldLabelModifier = customModifier } ''ShowMessageParams
+deriveLspJSON lspOptions ''ShowMessageParams
 
 type ShowMessageNotification = NotificationMessage ServerMethod ShowMessageParams
 
@@ -137,20 +135,20 @@ interface MessageActionItem {
 
 data MessageActionItem =
   MessageActionItem
-    { _title :: Text
+    { _messageActionItemTitle :: Text
     } deriving (Show,Read,Eq)
 
-deriveJSON lspOptions ''MessageActionItem
+deriveLspJSON lspOptions ''MessageActionItem
 
 
 data ShowMessageRequestParams =
   ShowMessageRequestParams
-    { _xtype   :: MessageType
-    , _message :: Text
-    , _actions :: Maybe [MessageActionItem]
+    { _showMessageRequestParamsType   :: MessageType
+    , _showMessageRequestParamsMessage :: Text
+    , _showMessageRequestParamsActions :: Maybe [MessageActionItem]
     } deriving (Show,Read,Eq)
 
-deriveJSON lspOptions{ fieldLabelModifier = customModifier } ''ShowMessageRequestParams
+deriveLspJSON lspOptions ''ShowMessageRequestParams
 
 type ShowMessageRequest = RequestMessage ServerMethod ShowMessageRequestParams Text
 type ShowMessageResponse = ResponseMessage Text
@@ -186,11 +184,11 @@ Where type is defined as above.
 
 data LogMessageParams =
   LogMessageParams {
-    _xtype   :: MessageType
-  , _message :: Text
+    _logMessageParamsType   :: MessageType
+  , _logMessageParamsMessage :: Text
   } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions{ fieldLabelModifier = customModifier } ''LogMessageParams
+deriveLspJSON lspOptions ''LogMessageParams
 
 
 type LogMessageNotification = NotificationMessage ServerMethod LogMessageParams
@@ -256,32 +254,32 @@ data ProgressStartParams =
   ProgressStartParams {
   -- | A unique identifier to associate multiple progress
   -- notifications with the same progress.
-    _id   :: Text
+    _progressStartParamsId   :: Text
   -- | Mandatory title of the progress operation.
   -- Used to briefly inform about the kind of operation being
   -- performed. Examples: "Indexing" or "Linking dependencies".
-  , _title :: Text
+  , _progressStartParamsTitle :: Text
   -- | Controls if a cancel button should show to allow the user to cancel the
   -- long running operation. Clients that don't support cancellation are allowed
   -- to ignore the setting.
-  , _cancellable :: Maybe Bool
+  , _progressStartParamsCancellable :: Maybe Bool
   -- | Optional, more detailed associated progress
   -- message. Contains complementary information to the
   -- '_title'. Examples: "3/25 files",
   -- "project/src/module2", "node_modules/some_dep". If
   -- unset, the previous progress message (if any) is
   -- still valid.
-  , _message :: Maybe Text
+  , _progressStartParamsMessage :: Maybe Text
   -- | Optional progress percentage to display (value 100 is considered 100%).
   -- If not provided infinite progress is assumed and clients are allowed
   -- to ignore the '_percentage' value in subsequent in report notifications.
   --
   -- The value should be steadily rising. Clients are free to ignore values
   -- that are not following this rule.
-  , _percentage :: Maybe Double
+  , _progressStartParamsPercentage :: Maybe Double
   } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions{ fieldLabelModifier = customModifier } ''ProgressStartParams
+deriveLspJSON lspOptions ''ProgressStartParams
 
 -- | The window/progress/start notification is sent from the server to the
 -- client to ask the client to start progress.
@@ -333,22 +331,22 @@ data ProgressReportParams =
   ProgressReportParams {
   -- | A unique identifier to associate multiple progress
   -- notifications with the same progress.
-    _id   :: Text
+    _progressReportParamsId   :: Text
   -- | Optional, more detailed associated progress
   -- message. Contains complementary information to the
   -- '_title'. Examples: "3/25 files",
   -- "project/src/module2", "node_modules/some_dep". If
   -- unset, the previous progress message (if any) is
   -- still valid.
-  , _message :: Maybe Text
+  , _progressReportParamsMessage :: Maybe Text
   -- | Optional progress percentage to display (value 100 is considered 100%).
   -- If infinite progress was indicated in the start notification client
   -- are allowed to ignore the value. In addition the value should be steadily
   -- rising. Clients are free to ignore values that are not following this rule.
-  , _percentage :: Maybe Double
+  , _progressReportParamsPercentage :: Maybe Double
   } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions{ fieldLabelModifier = customModifier } ''ProgressReportParams
+deriveLspJSON lspOptions ''ProgressReportParams
 
 -- | The window/progress/report notification is sent from the server to the
 -- client to report progress for a previously started progress.
@@ -380,10 +378,10 @@ data ProgressDoneParams =
   ProgressDoneParams {
   -- | A unique identifier to associate multiple progress
   -- notifications with the same progress.
-    _id   :: Text
+    _progressDoneParamsId   :: Text
   } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions{ fieldLabelModifier = customModifier } ''ProgressDoneParams
+deriveLspJSON lspOptions ''ProgressDoneParams
 
 -- | The window/progress/done notification is sent from the server to the
 -- client to stop a previously started progress.
@@ -416,10 +414,10 @@ data ProgressCancelParams =
   ProgressCancelParams {
   -- | A unique identifier to associate multiple progress
   -- notifications with the same progress.
-    _id   :: Text
+    _progressCancelParamsId   :: Text
   } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions{ fieldLabelModifier = customModifier } ''ProgressCancelParams
+deriveLspJSON lspOptions ''ProgressCancelParams
 
 -- | The window/progress/cancel notification is sent from the client to the server
 -- to inform the server that the user has pressed the cancel button on the progress UX.

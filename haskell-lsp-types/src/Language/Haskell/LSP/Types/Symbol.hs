@@ -1,10 +1,8 @@
 {-# LANGUAGE TemplateHaskell            #-}
-{-# LANGUAGE DuplicateRecordFields      #-}
 module Language.Haskell.LSP.Types.Symbol where
 
 import           Control.Applicative
 import           Data.Aeson
-import           Data.Aeson.TH
 import           Data.Scientific
 import           Data.Text                                      (Text)
 import           Language.Haskell.LSP.Types.Constants
@@ -101,10 +99,10 @@ Registration Options: TextDocumentRegistrationOptions
 
 data DocumentSymbolParams =
   DocumentSymbolParams
-    { _textDocument :: TextDocumentIdentifier
+    { _documentSymbolParamsTextDocument :: TextDocumentIdentifier
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''DocumentSymbolParams
+deriveLspJSON lspOptions ''DocumentSymbolParams
 
 -- -------------------------------------
 
@@ -205,25 +203,25 @@ instance FromJSON SymbolKind where
 -- most interesting range, e.g. the range of an identifier.
 data DocumentSymbol =
   DocumentSymbol
-    { _name           :: Text -- ^ The name of this symbol.
+    { _documentSymbolName           :: Text -- ^ The name of this symbol.
     -- | More detail for this symbol, e.g the signature of a function. If not
     -- provided the name is used.
-    , _detail         :: Maybe Text
-    , _kind           :: SymbolKind -- ^ The kind of this symbol.
-    , _deprecated     :: Maybe Bool -- ^ Indicates if this symbol is deprecated.
+    , _documentSymbolDetail         :: Maybe Text
+    , _documentSymbolKind           :: SymbolKind -- ^ The kind of this symbol.
+    , _documentSymbolDeprecated     :: Maybe Bool -- ^ Indicates if this symbol is deprecated.
     -- | The range enclosing this symbol not including leading/trailing
     -- whitespace but everything else like comments. This information is
     -- typically used to determine if the the clients cursor is inside the symbol
     -- to reveal in the symbol in the UI.
-    , _range          :: Range
+    , _documentSymbolRange          :: Range
     -- | The range that should be selected and revealed when this symbol is being
     -- picked, e.g the name of a function. Must be contained by the the '_range'.
-    , _selectionRange :: Range
+    , _documentSymbolSelectionRange :: Range
     -- | Children of this symbol, e.g. properties of a class.
-    , _children       :: Maybe (List DocumentSymbol)
+    , _documentSymbolChildren       :: Maybe (List DocumentSymbol)
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''DocumentSymbol
+deriveLspJSON lspOptions ''DocumentSymbol
 
 -- ---------------------------------------------------------------------
 
@@ -231,9 +229,9 @@ deriveJSON lspOptions ''DocumentSymbol
 -- interfaces etc.
 data SymbolInformation =
   SymbolInformation
-    { _name          :: Text -- ^ The name of this symbol.
-    , _kind          :: SymbolKind -- ^ The kind of this symbol.
-    , _deprecated    :: Maybe Bool -- ^ Indicates if this symbol is deprecated.
+    { _symbolInformationName          :: Text -- ^ The name of this symbol.
+    , _symbolInformationKind          :: SymbolKind -- ^ The kind of this symbol.
+    , _symbolInformationDeprecated    :: Maybe Bool -- ^ Indicates if this symbol is deprecated.
     -- | The location of this symbol. The location's range is used by a tool
     -- to reveal the location in the editor. If the symbol is selected in the
     -- tool the range's start information is used to position the cursor. So
@@ -243,15 +241,15 @@ data SymbolInformation =
     -- The range doesn't have to denote a node range in the sense of a abstract
     -- syntax tree. It can therefore not be used to re-construct a hierarchy of
     -- the symbols.
-    , _location      :: Location
+    , _symbolInformationLocation      :: Location
     -- | The name of the symbol containing this symbol. This information is for
     -- user interface purposes (e.g. to render a qualifier in the user interface
     -- if necessary). It can't be used to re-infer a hierarchy for the document
     -- symbols.
-    , _containerName :: Maybe Text
+    , _symbolInformationContainerName :: Maybe Text
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''SymbolInformation
+deriveLspJSON lspOptions ''SymbolInformation
 
 -- -------------------------------------
 

@@ -1,8 +1,6 @@
-{-# LANGUAGE DuplicateRecordFields      #-}
 {-# LANGUAGE TemplateHaskell            #-}
 module Language.Haskell.LSP.Types.TextDocument where
 
-import           Data.Aeson.TH
 import           Data.Text                      ( Text )
 import           Language.Haskell.LSP.Types.Constants
 import           Language.Haskell.LSP.Types.Location
@@ -26,10 +24,10 @@ interface TextDocumentIdentifier {
 -}
 data TextDocumentIdentifier =
   TextDocumentIdentifier
-    { _uri :: Uri
+    { _textDocumentIdentifierUri :: Uri
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''TextDocumentIdentifier
+deriveLspJSON lspOptions ''TextDocumentIdentifier
 
 {-
 TextDocumentItem
@@ -64,13 +62,13 @@ interface TextDocumentItem {
 
 data TextDocumentItem =
   TextDocumentItem {
-    _uri        :: Uri
-  , _languageId :: Text
-  , _version    :: Int
-  , _text       :: Text
+    _textDocumentItemUri :: Uri
+  , _textDocumentItemLanguageId :: Text
+  , _textDocumentItemVersion    :: Int
+  , _textDocumentItemText       :: Text
   } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''TextDocumentItem
+deriveLspJSON lspOptions ''TextDocumentItem
 
 -- ---------------------------------------------------------------------
 {-
@@ -96,8 +94,8 @@ interface TextDocumentPositionParams {
 -}
 data TextDocumentPositionParams =
   TextDocumentPositionParams
-    { _textDocument :: TextDocumentIdentifier
-    , _position     :: Position
+    { _textDocumentPositionParamsTextDocument :: TextDocumentIdentifier
+    , _textDocumentPositionParamsPosition     :: Position
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''TextDocumentPositionParams
+deriveLspJSON lspOptions ''TextDocumentPositionParams

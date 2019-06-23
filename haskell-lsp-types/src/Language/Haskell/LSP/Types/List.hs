@@ -1,6 +1,5 @@
 -- Need to split these types out into a separate module since
 -- ClientCapabilities also depends on them
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveTraversable          #-}
 {-# LANGUAGE DeriveGeneric              #-}
@@ -25,7 +24,5 @@ instance (A.FromJSON a) => A.FromJSON (List a) where
   parseJSON A.Null = return (List [])
   parseJSON v      = List <$> parseJSON v
 
-#if __GLASGOW_HASKELL__ >= 804
 instance Semigroup (List a) where
   (<>) = mappend
-#endif

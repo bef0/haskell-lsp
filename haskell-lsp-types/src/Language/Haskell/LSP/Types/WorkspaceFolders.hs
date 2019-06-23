@@ -1,4 +1,3 @@
-{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE TemplateHaskell       #-}
 module Language.Haskell.LSP.Types.WorkspaceFolders where
 
@@ -117,7 +116,7 @@ data WorkspaceFoldersChangeEvent =
 
 deriveJSON lspOptions ''WorkspaceFoldersChangeEvent
 
-data DidChangeWorkspaceFoldersParams = 
+data DidChangeWorkspaceFoldersParams =
   DidChangeWorkspaceFoldersParams
     { _event :: WorkspaceFoldersChangeEvent
       -- ^ The actual workspace folder change event.

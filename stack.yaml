@@ -1,13 +1,14 @@
-resolver: lts-13.25 # GHC 8.6.5
+system-ghc: true
+
+resolver: /var/stack/ide/build/stack.yaml
 
 packages:
 - '.'
 - ./haskell-lsp-types
 
-extra-deps:
-- rope-utf16-splay-0.3.1.0
-
 flags: {}
 extra-package-dbs: []
+
 nix:
-  packages: [icu]
+  enable: true
+  shell-file: stack.nix

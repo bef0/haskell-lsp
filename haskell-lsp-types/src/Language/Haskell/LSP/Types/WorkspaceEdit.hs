@@ -1,12 +1,8 @@
-{-# LANGUAGE CPP                        #-}
-{-# LANGUAGE DuplicateRecordFields      #-}
 {-# LANGUAGE TemplateHaskell            #-}
 module Language.Haskell.LSP.Types.WorkspaceEdit where
 
-import           Data.Aeson.TH
 import qualified Data.HashMap.Strict                        as H
 -- For <= 8.2.2
-import           Data.Monoid                                ((<>))
 import           Data.Text                                  (Text)
 import qualified Data.Text                                  as T
 import           Language.Haskell.LSP.Types.Constants
@@ -41,11 +37,11 @@ interface TextEdit {
 
 data TextEdit =
   TextEdit
-    { _range   :: Range
-    , _newText :: Text
+    { _textEditEange   :: Range
+    , _textEditNewText :: Text
     } deriving (Show,Read,Eq)
 
-deriveJSON lspOptions ''TextEdit
+deriveLspJSON lspOptions ''TextEdit
 
 -- ---------------------------------------------------------------------
 {-
@@ -70,11 +66,11 @@ type TextDocumentVersion = Maybe Int
 
 data VersionedTextDocumentIdentifier =
   VersionedTextDocumentIdentifier
-    { _uri     :: Uri
-    , _version :: TextDocumentVersion
+    { _versionedTextDocumentIdentifierUri     :: Uri
+    , _versionedTextDocumentIdentifierVersion :: TextDocumentVersion
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''VersionedTextDocumentIdentifier
+deriveLspJSON lspOptions ''VersionedTextDocumentIdentifier
 
 -- ---------------------------------------------------------------------
 {-
@@ -105,11 +101,11 @@ export interface TextDocumentEdit {
 
 data TextDocumentEdit =
   TextDocumentEdit
-    { _textDocument :: VersionedTextDocumentIdentifier
-    , _edits        :: List TextEdit
+    { _textDocumentEditTextDocument :: VersionedTextDocumentIdentifier
+    , _textDocumentEditEdits        :: List TextEdit
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''TextDocumentEdit
+deriveLspJSON lspOptions ''TextDocumentEdit
 
 -- ---------------------------------------------------------------------
 {-
@@ -145,20 +141,18 @@ type WorkspaceEditMap = H.HashMap Uri (List TextEdit)
 
 data WorkspaceEdit =
   WorkspaceEdit
-    { _changes         :: Maybe WorkspaceEditMap
-    , _documentChanges :: Maybe (List TextDocumentEdit)
+    { _workspaceEditChanges         :: Maybe WorkspaceEditMap
+    , _workspaceEditDocumentChanges :: Maybe (List TextDocumentEdit)
     } deriving (Show, Read, Eq)
 
 instance Monoid WorkspaceEdit where
   mempty = WorkspaceEdit Nothing Nothing
   mappend (WorkspaceEdit a b) (WorkspaceEdit c d) = WorkspaceEdit (a <> c) (b <> d)
 
-deriveJSON lspOptions ''WorkspaceEdit
+deriveLspJSON lspOptions ''WorkspaceEdit
 
-#if __GLASGOW_HASKELL__ >= 804
 instance Semigroup WorkspaceEdit where
   (<>) = mappend
-#endif
 
 -- ---------------------------------------------------------------------
 
