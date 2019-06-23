@@ -1,10 +1,8 @@
-{-# LANGUAGE DuplicateRecordFields      #-}
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE TemplateHaskell            #-}
 module Language.Haskell.LSP.Types.Message where
 
 import qualified Data.Aeson                                 as A
-import           Data.Aeson.TH
 import           Data.Aeson.Types
 import           Data.Hashable
 -- For <= 8.2.2
@@ -278,13 +276,13 @@ instance A.ToJSON ServerMethod where
 
 data RequestMessage m req resp =
   RequestMessage
-    { _jsonrpc :: Text
-    , _id      :: LspId
-    , _method  :: m
-    , _params  :: req
+    { _requestMessageJsonrpc :: Text
+    , _requestMessageId      :: LspId
+    , _requestMessageMethod  :: m
+    , _requestMessageParams  :: req
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''RequestMessage
+deriveLspJSON lspOptions ''RequestMessage
 
 -- ---------------------------------------------------------------------
 {-
@@ -365,25 +363,25 @@ instance A.FromJSON ErrorCode where
 
 data ResponseError =
   ResponseError
-    { _code    :: ErrorCode
-    , _message :: Text
-    , _xdata   :: Maybe A.Value
+    { _responseErrorCode    :: ErrorCode
+    , _responseErrorMessage :: Text
+    , _responseErrorData   :: Maybe A.Value
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions{ fieldLabelModifier = customModifier } ''ResponseError
+deriveLspJSON lspOptions ''ResponseError
 
 -- ---------------------------------------------------------------------
 
 data ResponseMessage a =
   ResponseMessage
-    { _jsonrpc :: Text
-    , _id      :: LspIdRsp
-    , _result  :: Maybe a
-    , _error   :: Maybe ResponseError
+    { _responseMessageJsonrpc :: Text
+    , _responseMessageId      :: LspIdRsp
+    , _responseMessageResult  :: Maybe a
+    , _responseMessageError   :: Maybe ResponseError
     } deriving (Read,Show,Eq)
 
-deriveToJSON lspOptions ''ResponseMessage
-
+deriveLspJSON lspOptions ''ResponseMessage
+{-
 instance FromJSON a => FromJSON (ResponseMessage a) where
   parseJSON = withObject "Response" $ \o ->
     ResponseMessage
@@ -392,7 +390,7 @@ instance FromJSON a => FromJSON (ResponseMessage a) where
       -- It is important to use .:! so that result = null gets decoded as Just Nothing
       <*> o .:! "result"
       <*> o .:! "error"
-
+-}
 type ErrorResponse = ResponseMessage ()
 
 -- ---------------------------------------------------------------------
@@ -413,12 +411,12 @@ starting with '$/' it is free to ignore them if they are unknown.
 
 data NotificationMessage m a =
   NotificationMessage
-    { _jsonrpc :: Text
-    , _method  :: m
-    , _params  :: a
+    { _notificationMessageJsonrpc :: Text
+    , _notificationMessageMethod  :: m
+    , _notificationMessageParams  :: a
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''NotificationMessage
+deriveLspJSON lspOptions ''NotificationMessage
 
 -- ---------------------------------------------------------------------
 {-
@@ -450,10 +448,10 @@ it allows for returning partial results on cancel.
 
 data CancelParams =
   CancelParams
-    { _id :: LspId
+    { _cancelParamsId :: LspId
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''CancelParams
+deriveLspJSON lspOptions ''CancelParams
 
 type CancelNotification = NotificationMessage ClientMethod CancelParams
 type CancelNotificationServer = NotificationMessage ServerMethod CancelParams

@@ -11,6 +11,7 @@
 /.ghc.environment*
 /haskell-lsp-types/cabal.project.local
 /haskell-lsp-types/cabal.project.local~
+*.log
 *.swp
 *.swo
 *.DS_Store

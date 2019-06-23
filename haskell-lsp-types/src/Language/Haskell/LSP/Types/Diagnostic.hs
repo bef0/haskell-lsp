@@ -1,4 +1,3 @@
-{-# LANGUAGE DuplicateRecordFields      #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE DeriveGeneric              #-}
 
@@ -6,7 +5,6 @@ module Language.Haskell.LSP.Types.Diagnostic where
 
 import           Control.DeepSeq
 import qualified Data.Aeson                                 as A
-import           Data.Aeson.TH
 import           Data.Text
 import           GHC.Generics
 import           Language.Haskell.LSP.Types.Constants
@@ -79,13 +77,13 @@ export interface DiagnosticRelatedInformation {
 
 data DiagnosticRelatedInformation =
   DiagnosticRelatedInformation
-    { _location :: Location
-    , _message  :: Text
+    { _diagnosticRelatedInformationLocation :: Location
+    , _diagnosticRelatedInformationMessage  :: Text
     } deriving (Show, Read, Eq, Ord, Generic)
 
 instance NFData DiagnosticRelatedInformation
 
-deriveJSON lspOptions ''DiagnosticRelatedInformation
+deriveLspJSON lspOptions ''DiagnosticRelatedInformation
 
 -- ---------------------------------------------------------------------
 {-
@@ -135,14 +133,14 @@ interface Diagnostic {
 type DiagnosticSource = Text
 data Diagnostic =
   Diagnostic
-    { _range              :: Range
-    , _severity           :: Maybe DiagnosticSeverity
-    , _code               :: Maybe Text -- Note: Protocol allows Int too.
-    , _source             :: Maybe DiagnosticSource
-    , _message            :: Text
-    , _relatedInformation :: Maybe (List DiagnosticRelatedInformation)
+    { _diagnosticRange              :: Range
+    , _diagnosticSeverity           :: Maybe DiagnosticSeverity
+    , _diagnosticCode               :: Maybe Text -- Note: Protocol allows Int too.
+    , _diagnosticSource             :: Maybe DiagnosticSource
+    , _diagnosticMessage            :: Text
+    , _diagnosticRelatedInformation :: Maybe (List DiagnosticRelatedInformation)
     } deriving (Show, Read, Eq, Ord, Generic)
 
 instance NFData Diagnostic
 
-deriveJSON lspOptions ''Diagnostic
+deriveLspJSON lspOptions ''Diagnostic

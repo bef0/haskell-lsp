@@ -1,4 +1,3 @@
-{-# LANGUAGE DuplicateRecordFields      #-}
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE TemplateHaskell            #-}
 module Language.Haskell.LSP.Types.Completion where
@@ -321,68 +320,68 @@ instance A.FromJSON CompletionDoc where
 
 data CompletionItem =
   CompletionItem
-    { _label               :: Text -- ^ The label of this completion item. By default also
+    { _completionItemLabel               :: Text -- ^ The label of this completion item. By default also
                        -- the text that is inserted when selecting this
                        -- completion.
-    , _kind                :: Maybe CompletionItemKind
-    , _detail              :: Maybe Text -- ^ A human-readable string with additional
+    , _completionItemKind                :: Maybe CompletionItemKind
+    , _completionItemDetail              :: Maybe Text -- ^ A human-readable string with additional
                               -- information about this item, like type or
                               -- symbol information.
-    , _documentation       :: Maybe CompletionDoc -- ^ A human-readable string that represents
+    , _completionItemDocumentation       :: Maybe CompletionDoc -- ^ A human-readable string that represents
                                                   -- a doc-comment.
-    , _deprecated          :: Maybe Bool -- ^ Indicates if this item is deprecated.
-    , _preselect           :: Maybe Bool
+    , _completionItemDeprecated          :: Maybe Bool -- ^ Indicates if this item is deprecated.
+    , _completionItemPreselect           :: Maybe Bool
          -- ^ Select this item when showing.
          -- *Note* that only one completion item can be selected and that the
          -- tool / client decides which item that is. The rule is that the *first*
          -- item of those that match best is selected.
-    , _sortText            :: Maybe Text -- ^ A string that should be used when filtering
+    , _completionItemSortText            :: Maybe Text -- ^ A string that should be used when filtering
                                 -- a set of completion items. When `falsy` the
                                 -- label is used.
-    , _filterText          :: Maybe Text -- ^ A string that should be used when
+    , _completionItemFilterText          :: Maybe Text -- ^ A string that should be used when
                                   -- filtering a set of completion items. When
                                   -- `falsy` the label is used.
-    , _insertText          :: Maybe Text -- ^ A string that should be inserted a
+    , _completionItemInsertText          :: Maybe Text -- ^ A string that should be inserted a
                                   -- document when selecting this completion.
                                   -- When `falsy` the label is used.
-    , _insertTextFormat    :: Maybe InsertTextFormat
+    , _completionItemInsertTextFormat    :: Maybe InsertTextFormat
          -- ^ The format of the insert text. The format applies to both the
          -- `insertText` property and the `newText` property of a provided
          -- `textEdit`.
-    , _textEdit            :: Maybe TextEdit
+    , _completionItemTextEdit            :: Maybe TextEdit
          -- ^ An edit which is applied to a document when selecting this
          -- completion. When an edit is provided the value of `insertText` is
          -- ignored.
          --
          -- *Note:* The range of the edit must be a single line range and it
          -- must contain the position at which completion has been requested.
-    , _additionalTextEdits :: Maybe (List TextEdit)
+    , _completionItemAdditionalTextEdits :: Maybe (List TextEdit)
          -- ^ An optional array of additional text edits that are applied when
          -- selecting this completion. Edits must not overlap with the main edit
          -- nor with themselves.
-    , _commitCharacters    :: Maybe (List Text)
+    , _completionItemCommitCharacters    :: Maybe (List Text)
          -- ^ An optional set of characters that when pressed while this completion
          -- is active will accept it first and then type that character. *Note*
          -- that all commit characters should have `length=1` and that superfluous
          -- characters will be ignored.
-    , _command             :: Maybe Command
+    , _completionItemCommand             :: Maybe Command
         -- ^ An optional command that is executed *after* inserting this
         -- completion. *Note* that additional modifications to the current
         -- document should be described with the additionalTextEdits-property.
-    , _xdata               :: Maybe A.Value -- ^ An data entry field that is preserved on a
+    , _completionItemData               :: Maybe A.Value -- ^ An data entry field that is preserved on a
                               -- completion item between a completion and a
                               -- completion resolve request.
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions{ fieldLabelModifier = customModifier } ''CompletionItem
+deriveLspJSON lspOptions ''CompletionItem
 
 data CompletionListType =
   CompletionListType
-    { _isIncomplete :: Bool
-    , _items        :: List CompletionItem
+    { _completionListTypeIsIncomplete :: Bool
+    , _completionListTypeItems        :: List CompletionItem
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''CompletionListType
+deriveLspJSON lspOptions ''CompletionListType
 
 data CompletionResponseResult
   = CompletionList CompletionListType
@@ -419,26 +418,26 @@ instance A.FromJSON CompletionTriggerKind where
 
 data CompletionContext =
   CompletionContext
-    { _triggerKind      :: CompletionTriggerKind -- ^ How the completion was triggered.
-    , _triggerCharacter :: Maybe Text
+    { _completionContextTriggerKind      :: CompletionTriggerKind -- ^ How the completion was triggered.
+    , _completionContextTriggerCharacter :: Maybe Text
       -- ^ The trigger character (a single character) that has trigger code complete.
       -- Is undefined if `triggerKind !== CompletionTriggerKind.TriggerCharacter`
     }
   deriving (Read, Show, Eq)
 
-deriveJSON lspOptions ''CompletionContext
+deriveLspJSON lspOptions ''CompletionContext
 
 data CompletionParams =
   CompletionParams
-    { _textDocument :: TextDocumentIdentifier -- ^ The text document.
-    , _position     :: Position -- ^ The position inside the text document.
-    , _context      :: Maybe CompletionContext
+    { _completionParamsTextDocument :: TextDocumentIdentifier -- ^ The text document.
+    , _completionParamsPosition     :: Position -- ^ The position inside the text document.
+    , _completionParamsContext      :: Maybe CompletionContext
       -- ^ The completion context. This is only available if the client specifies
       -- to send this using `ClientCapabilities.textDocument.completion.contextSupport === true`
     }
   deriving (Read, Show, Eq)
 
-deriveJSON lspOptions ''CompletionParams
+deriveLspJSON lspOptions ''CompletionParams
 
 type CompletionResponse = ResponseMessage CompletionResponseResult
 type CompletionRequest = RequestMessage ClientMethod CompletionParams CompletionResponseResult
@@ -465,12 +464,12 @@ export interface CompletionRegistrationOptions extends TextDocumentRegistrationO
 
 data CompletionRegistrationOptions =
   CompletionRegistrationOptions
-    { _documentSelector  :: Maybe DocumentSelector
-    , _triggerCharacters :: Maybe (List String)
-    , _resolveProvider   :: Maybe Bool
+    { _completionRegistrationOptionsDocumentSelector  :: Maybe DocumentSelector
+    , _completionRegistrationOptionsTriggerCharacters :: Maybe (List String)
+    , _completionRegistrationOptionsResolveProvider   :: Maybe Bool
     } deriving (Show, Read, Eq)
 
-deriveJSON lspOptions ''CompletionRegistrationOptions
+deriveLspJSON lspOptions ''CompletionRegistrationOptions
 
 -- ---------------------------------------------------------------------
 {-

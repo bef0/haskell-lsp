@@ -1,8 +1,6 @@
-{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE TemplateHaskell       #-}
 module Language.Haskell.LSP.Types.Color where
 
-import           Data.Aeson.TH
 import           Data.Text                      ( Text )
 import           Language.Haskell.LSP.Types.Constants
 import           Language.Haskell.LSP.Types.List
@@ -80,28 +78,28 @@ error: code and message set in case an exception happens during the
 -- | Represents a color in RGBA space.
 data Color =
   Color
-    { _red   :: Int -- ^ The red component of this color in the range [0-1].
-    , _green :: Int -- ^ The green component of this color in the range [0-1].
-    , _blue  :: Int -- ^ The blue component of this color in the range [0-1].
-    , _alpha :: Int -- ^ The alpha component of this color in the range [0-1].
+    { _colorRed   :: Int -- ^ The red component of this color in the range [0-1].
+    , _colorGreen :: Int -- ^ The green component of this color in the range [0-1].
+    , _colorBlue  :: Int -- ^ The blue component of this color in the range [0-1].
+    , _colorAlpha :: Int -- ^ The alpha component of this color in the range [0-1].
     } deriving (Read, Show, Eq)
 
-deriveJSON lspOptions ''Color
+deriveLspJSON lspOptions ''Color
 
 data ColorInformation =
   ColorInformation
-    { _range :: Range -- ^ The range in the document where this color appears.
-    , _color :: Color -- ^ The actual color value for this color range.
+    { _colorInformationRange :: Range -- ^ The range in the document where this color appears.
+    , _colorInformationColor :: Color -- ^ The actual color value for this color range.
     } deriving (Read, Show, Eq)
 
-deriveJSON lspOptions ''ColorInformation
+deriveLspJSON lspOptions ''ColorInformation
 
 data DocumentColorParams =
   DocumentColorParams
-    { _textDocument :: TextDocumentIdentifier -- ^ The text document.
+    { _documentColorParamsTextDocument :: TextDocumentIdentifier -- ^ The text document.
     } deriving (Read, Show, Eq)
 
-deriveJSON lspOptions ''DocumentColorParams
+deriveLspJSON lspOptions ''DocumentColorParams
 
 type DocumentColorRequest =
   RequestMessage ClientMethod DocumentColorParams (List ColorInformation)
@@ -160,41 +158,41 @@ interface ColorPresentation {
 	 */
 	additionalTextEdits?: TextEdit[];
 }
-error: code and message set in case an exception happens during the 
+error: code and message set in case an exception happens during the
 ‘textDocument/colorPresentation’ request
 -}
 
 data ColorPresentationParams =
   ColorPresentationParams
     { -- | The text document.
-      _textDocument :: TextDocumentIdentifier
+      _colorPresentationParamsTextDocument :: TextDocumentIdentifier
       -- | The color information to request presentations for.
-    , _color        :: Color
+    , _colorPresentationParamsColor        :: Color
       -- | The range where the color would be inserted.
       -- Serves as a context.
-    , _range        :: Range
+    , _colorPresentationParamsRange        :: Range
     } deriving (Read, Show, Eq)
 
-deriveJSON lspOptions ''ColorPresentationParams
+deriveLspJSON lspOptions ''ColorPresentationParams
 
 data ColorPresentation =
   ColorPresentation
     { -- | The label of this color presentation. It will be shown on the color
       -- picker header. By default this is also the text that is inserted when selecting
       -- this color presentation.
-      _label               :: Text
+      _colorPresentationLabel               :: Text
       -- | A 'TextEdit' which is applied to a document when selecting
       -- this presentation for the color.  When `falsy` the '_label'
       -- is used.
-    , _textEdit            :: Maybe TextEdit
+    , _colorPresentationTextEdit            :: Maybe TextEdit
       -- | An optional array of additional 'TextEdit's that are applied when
       -- selecting this color presentation. Edits must not overlap with the main
       -- '_textEdit' nor with themselves.
-    , _additionalTextEdits :: Maybe (List TextEdit)
+    , _colorPresentationAdditionalTextEdits :: Maybe (List TextEdit)
     } deriving (Read, Show, Eq)
 
-deriveJSON lspOptions ''ColorPresentation
+deriveLspJSON lspOptions ''ColorPresentation
 
-type ColorPresentationRequest = 
+type ColorPresentationRequest =
   RequestMessage ClientMethod ColorPresentationParams (List ColorPresentation)
 type ColorPresentationResponse = ResponseMessage (List ColorPresentation)

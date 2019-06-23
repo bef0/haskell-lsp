@@ -1,11 +1,8 @@
-{-# LANGUAGE DuplicateRecordFields      #-}
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE TemplateHaskell            #-}
 module Language.Haskell.LSP.Types.CodeAction where
 
 import           Control.Applicative
-import qualified Data.Aeson                    as A
-import           Data.Aeson.TH
 import           Data.Aeson.Types
 import           Data.Text                      ( Text )
 import           Language.Haskell.LSP.Types.Command
@@ -244,21 +241,21 @@ instance FromJSON CodeActionKind where
 
 data CodeActionContext =
   CodeActionContext
-    { _diagnostics :: List Diagnostic
-    , only         :: Maybe (List CodeActionKind)
+    { _codeActionContextDiagnostics :: List Diagnostic
+    , _codeActionContextOnly         :: Maybe (List CodeActionKind)
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''CodeActionContext
+deriveLspJSON lspOptions ''CodeActionContext
 
 
 data CodeActionParams =
   CodeActionParams
-    { _textDocument :: TextDocumentIdentifier
-    , _range        :: Range
-    , _context      :: CodeActionContext
+    { _codeActionParamsTextDocument :: TextDocumentIdentifier
+    , _codeActionParamsRange        :: Range
+    , _codeActionParamsContext      :: CodeActionContext
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''CodeActionParams
+deriveLspJSON lspOptions ''CodeActionParams
 
 data CodeAction =
   -- | A code action represents a change that can be performed in code, e.g. to fix a problem or
@@ -267,16 +264,16 @@ data CodeAction =
   -- A CodeAction must set either '_edit' and/or a '_command'. If both are supplied,
   -- the '_edit' is applied first, then the '_command' is executed.
   CodeAction
-    { _title       :: Text -- ^ A short, human-readable, title for this code action.
-    , _kind        :: Maybe CodeActionKind -- ^ The kind of the code action. Used to filter code actions.
-    , _diagnostics :: Maybe (List Diagnostic) -- ^ The diagnostics that this code action resolves.
-    , _edit        :: Maybe WorkspaceEdit -- ^ The workspace edit this code action performs.
-    , _command     :: Maybe Command -- ^ A command this code action executes. If a code action
+    { _codeActionTitle       :: Text -- ^ A short, human-readable, title for this code action.
+    , _codeActionKind        :: Maybe CodeActionKind -- ^ The kind of the code action. Used to filter code actions.
+    , _dodeActionDiagnostics :: Maybe (List Diagnostic) -- ^ The diagnostics that this code action resolves.
+    , _codeActionEdit        :: Maybe WorkspaceEdit -- ^ The workspace edit this code action performs.
+    , _codeActionCommand     :: Maybe Command -- ^ A command this code action executes. If a code action
                                     -- provides an edit and a command, first the edit is
                                     -- executed and then the command.
     } deriving (Read,Show,Eq)
 
-deriveJSON lspOptions ''CodeAction
+deriveLspJSON lspOptions ''CodeAction
 
 data CAResult = CACommand Command
               | CACodeAction CodeAction
