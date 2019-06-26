@@ -20,7 +20,6 @@ library
   exposed-modules:     Language.Haskell.LSP.Types
                      , Language.Haskell.LSP.Types.Capabilities
                      , Language.Haskell.LSP.Types.Constants
-                     , Language.Haskell.LSP.Types.Lens
                      , Language.Haskell.LSP.Types.MessageFuncs
                      , Language.Haskell.LSP.Types.Utils
   other-modules:       Language.Haskell.LSP.Types.ClientCapabilities
@@ -46,13 +45,12 @@ library
   ghc-options:         -Wall
   -- ghc-options:         -Werror
   build-depends:       base >=4.9 && <4.13
-                     , aeson >=1.2.2.0
+                     , aeson
                      , bytestring
                      , data-default
                      , deepseq
                      , filepath
                      , hashable
-                     , lens >= 4.15.2
                      , network-uri
                      , scientific
                      , text
